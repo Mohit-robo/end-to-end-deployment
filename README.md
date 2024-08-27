@@ -36,3 +36,23 @@ This repository encapsulates a comprehensive deep learning workflow, guiding you
     ``` localhost:8080```
   
 </details>
+
+## Step by Step Implementation
+
+### Step 1: Installation and Setup
+
+#### Create a virtual environmen
+    
+    ### Conda env
+    conda create -n waste python=3.7 -y
+    conda activate waste
+
+    ### Virtual env
+    python3 -m venv waste
+    
+    source waste/bin/activate ## linux
+    waste/Scripts/activate ## Windows
+
+#### Install Requirements
+
+    pip install -r requirements.txt
