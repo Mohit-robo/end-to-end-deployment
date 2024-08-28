@@ -89,3 +89,26 @@ Refer to this [file](wasteDetection/constant/training_pipeline/__init__.py), thi
     python wasteDetection/pipeline/training_pipeline.py
 
 Run the above command to train the object detector model. Check the `artifacts/model_trainer/`  folder, the final weights file will be save here.  
+
+### **Step 4: Testing Flask App Locally**
+
+1. Run the Flask App locally
+
+
+        python app.py
+
+2. Open a browser and host ip and the port on which the app is runnig. In our case:
+
+        localhost:8080
+
+    This open a page that directs to the `prediction` page. 
+
+3. Incase if you want to access the webcam, open 
+
+        localhost:8080/live
+
+    This will access the webcam
+
+4. Incase if you don't have a model trained, open:  
+
+        localhost:8080/train

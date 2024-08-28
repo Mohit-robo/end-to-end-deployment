@@ -58,6 +58,8 @@ class ModelTrainerConfig:
 
     batch_size = MODEL_TRAINER_BATCH_SIZE
 
+    mlflow_tracking_uri = MLFLOW_TRACKING_URI
+
 class ModelPredictionConfig:
     trained_model_file_path: str = MODEL_WEIGHT_PATH
     prediction_image_path: str = PREDICTION_IMAGE_PATH

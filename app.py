@@ -59,7 +59,8 @@ def predictRoute():
 @cross_origin()
 def predictLive():
     try:
-        os.system("cd yolov5/ && python detect.py --weights artifacts/model_trainer/best.pt --img 416 --conf 0.5 --source 0")
+        prediction_config = ModelPredictionConfig()
+        os.system(f"cd yolov5/ && python detect.py --weights {prediction_config.trained_model_file_path} --img 416 --conf 0.5 --source 0")
         os.system("rm -rf yolov5/runs")
         return "Camera starting!!" 
 

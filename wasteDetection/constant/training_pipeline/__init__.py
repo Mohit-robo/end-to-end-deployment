@@ -43,3 +43,8 @@ MODEL PREDICTION related constant
 MODEL_WEIGHT_PATH: str = "../artifacts/model_trainer/best.pt"
 
 PREDICTION_IMAGE_PATH: str = "../data/inputImage.jpg"
+
+"""
+MLFLOW_TRACKING_URI
+"""
+MLFLOW_TRACKING_URI:str = "https://dagshub.com/Mohit-robo/end-to-end-deployment.mlflow"
