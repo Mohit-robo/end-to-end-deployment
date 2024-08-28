@@ -7,7 +7,7 @@ DATA_INGESTION_DIR_NAME: str = "data_ingestion"
 
 DATA_INGESTION_FEATURE_STORE_DIR: str = "feature_store"
 
-DATA_DOWNLOAD_URL: str = "https://github.com/Mohit-robo/Dataset/blob/main/waste-detection.zip"
+DATA_DOWNLOAD_URL: str = "https://github.com/Mohit-robo/Dataset/raw/main/waste-detection.zip"
 
 LOCAL_DATA_FILE: str = "artifacts/data_ingestion/data.zip"
 
@@ -36,3 +36,10 @@ MODEL_TRAINER_PRETRAINED_WEIGHT_NAME: str = "yolov5s.pt"
 MODEL_TRAINER_NO_EPOCHS: int = 1
 
 MODEL_TRAINER_BATCH_SIZE: int = 16
+
+"""
+MODEL PREDICTION related constant 
+"""
+MODEL_WEIGHT_PATH: str = "../artifacts/model_trainer/best.pt"
+
+PREDICTION_IMAGE_PATH: str = "../data/inputImage.jpg"

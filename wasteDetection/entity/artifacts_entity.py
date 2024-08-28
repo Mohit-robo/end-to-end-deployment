@@ -18,3 +18,7 @@ class DataValidationArtifact:
 class ModelTrainerArtifact:
     trained_model_file_path: str
 
+@dataclass
+class ModelPredictionArtifact:
+    trained_model_file_path: str
+    prediction_image_path: str

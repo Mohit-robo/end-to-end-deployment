@@ -2,6 +2,14 @@
 
 This repository encapsulates a comprehensive deep learning workflow, guiding you from raw data collection to deploying a fully trained model on the cloud. The project integrates essential components such as data version control, MLFlow for experiment tracking, and Docker for containerization, making it a robust and scalable solution for real-world deep learning applications.
 
+## Key Features
+* Logging and Exception Handling
+* Modular Coding
+* MLFlow - Experiment Tracking
+* DVC - Data Version Control
+* Flask - Web App
+* Docker and AWS for Cloud Deployment
+
 <details>
   <summary><b>Run the App</b></summary>
 
@@ -37,11 +45,11 @@ This repository encapsulates a comprehensive deep learning workflow, guiding you
   
 </details>
 
-## Step by Step Implementation
+## **Step by Step Implementation**
 
-### Step 1: Installation and Setup
+### **Step 1: Installation and Setup**
 
-#### Create a virtual environmen
+#### **Create a virtual environment**
     
     ### Conda env
     conda create -n waste python=3.7 -y
@@ -53,6 +61,31 @@ This repository encapsulates a comprehensive deep learning workflow, guiding you
     source waste/bin/activate ## linux
     waste/Scripts/activate ## Windows
 
-#### Install Requirements
+#### **Install Requirements**
 
     pip install -r requirements.txt
+
+### **Step 2: Data Gathering**
+
+The URL to the dataset is mentioned in the configs in this [file](wasteDetection/constant/training_pipeline/__init__.py). You can change the URL to your dataset incsae you want to use another custom dataset
+
+### **Logging and Exception Handling**
+
+
+    This project incorporates robust logging and exception handling to ensure smooth and traceable execution. Logging provides detailed insights into the workflow by capturing key events, errors, and system states, which aids in debugging and monitoring the application's performance. Exception handling mechanisms are in place to gracefully manage unexpected errors, preventing the application from crashing and ensuring that issues are logged for future analysis. This approach enhances the reliability and maintainability of the entire pipeline.
+
+### **Step 3: Coding**
+
+The directory structure is as shown below:
+
+![Dir Structure](diagrams/coding.png)
+
+Run the ```template.py``` script to automatically create all the required files and folders. Refer to all the files from this repo and test the files individually. 
+
+#### **Model Training**
+
+Refer to this [file](wasteDetection/constant/training_pipeline/__init__.py), this contains the configs.
+
+    python wasteDetection/pipeline/training_pipeline.py
+
+Run the above command to train the object detector model. Check the `artifacts/model_trainer/`  folder, the final weights file will be save here.  
