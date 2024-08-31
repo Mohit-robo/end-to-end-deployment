@@ -30,8 +30,6 @@ class DataIngestionConfig:
 
     unzip_dir: str = UNZIP_DIR
 
-
-
 @dataclass
 class DataValidationConfig:
     data_validation_dir: str = os.path.join(
@@ -59,6 +57,10 @@ class ModelTrainerConfig:
     batch_size = MODEL_TRAINER_BATCH_SIZE
 
     mlflow_tracking_uri = MLFLOW_TRACKING_URI
+
+    github_user_name: str = GITHUB_USER_NAME
+
+    github_repo_name: str = GITHUB_REPO_NAME
 
 class ModelPredictionConfig:
     trained_model_file_path: str = MODEL_WEIGHT_PATH

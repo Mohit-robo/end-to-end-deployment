@@ -37,6 +37,10 @@ MODEL_TRAINER_NO_EPOCHS: int = 1
 
 MODEL_TRAINER_BATCH_SIZE: int = 16
 
+GITHUB_USER_NAME: str = "Mohit-robo"
+
+GITHUB_REPO_NAME: str = "end-to-end-deployment"
+
 """
 MODEL PREDICTION related constant 
 """

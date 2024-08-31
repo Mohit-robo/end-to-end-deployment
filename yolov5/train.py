@@ -31,7 +31,6 @@ import mlflow
 import mlflow.pytorch
 from mlflow.models.signature import infer_signature
 from urllib.parse import urlparse
-import dagshub
 
 import numpy as np
 import torch
@@ -74,7 +73,7 @@ WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
 GIT_INFO = check_git_info()
 
 
-def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictionary
+def train(hyp, opt, device, callbacks, mlflow):  # hyp is path/to/hyp.yaml or hyp dictionary
     save_dir, epochs, batch_size, weights, single_cls, evolve, data, cfg, resume, noval, nosave, workers, freeze = \
         Path(opt.save_dir), opt.epochs, opt.batch_size, opt.weights, opt.single_cls, opt.evolve, opt.data, opt.cfg, \
         opt.resume, opt.noval, opt.nosave, opt.workers, opt.freeze
@@ -448,6 +447,16 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
         callbacks.run('on_train_end', last, best, epoch, results)
 
     torch.cuda.empty_cache()
+    keys = ('metrics/precision', 'metrics/recall', 'metrics/mAP_0.5', 'metrics/mAP_0.5:0.95', 'val/box_loss',
+                        'val/obj_loss', 'val/cls_loss')
+                            
+    for x, key in zip(list(results), keys):
+        # existing code (...)
+        key = re.sub('[^a-zA-Z0-9\/\_\-\. ]', '-', key)
+        # we remove not allowed characters from the tags.
+        mlflow.log_metric(key, float(x))
+
+    mlflow.log_params(hyp)                                                                                                                                                                                                                                                                                                                                                  
     return results
 
 
@@ -455,7 +464,7 @@ def parse_opt(known=False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str, default=ROOT / 'yolov5s.pt', help='initial weights path')
     parser.add_argument('--cfg', type=str, default='', help='model.yaml path')
-    parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='dataset.yaml path')
+    parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='dataset.yaml path')                                               
     parser.add_argument('--hyp', type=str, default=ROOT / 'data/hyps/hyp.scratch-low.yaml', help='hyperparameters path')
     parser.add_argument('--epochs', type=int, default=100, help='total training epochs')
     parser.add_argument('--batch-size', type=int, default=16, help='total batch size for all GPUs, -1 for autobatch')
@@ -468,7 +477,7 @@ def parse_opt(known=False):
     parser.add_argument('--noplots', action='store_true', help='save no plot files')
     parser.add_argument('--evolve', type=int, nargs='?', const=300, help='evolve hyperparameters for x generations')
     parser.add_argument('--bucket', type=str, default='', help='gsutil bucket')
-    parser.add_argument('--cache', type=str, nargs='?', const='ram', help='image --cache ram/disk')
+    parser.add_argument('--cache', type=str, nargs='?', const='ram', help='image --cache ram/disk')                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
     parser.add_argument('--image-weights', action='store_true', help='use weighted image selection for training')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--multi-scale', action='store_true', help='vary img-size +/- 50%%')
@@ -548,13 +557,13 @@ def main(opt, callbacks=Callbacks()):
             assert opt.batch_size != -1, f'AutoBatch with --batch-size -1 {msg}, please pass a valid --batch-size'
             assert opt.batch_size % WORLD_SIZE == 0, f'--batch-size {opt.batch_size} must be multiple of WORLD_SIZE'
             assert torch.cuda.device_count() > LOCAL_RANK, 'insufficient CUDA devices for DDP command'
-            torch.cuda.set_device(LOCAL_RANK)
+            torch.cuda.set_device(LOCAL_RANK) 
             device = torch.device('cuda', LOCAL_RANK)
             dist.init_process_group(backend='nccl' if dist.is_nccl_available() else 'gloo')
 
         # Train
         if not opt.evolve:
-            train(opt.hyp, opt, device, callbacks)
+            train(opt.hyp, opt, device, callbacks, mlflow)
 
         # Evolve hyperparameters (optional)
         else:
@@ -640,18 +649,24 @@ def main(opt, callbacks=Callbacks()):
                     hyp[k] = round(hyp[k], 5)  # significant digits
 
                 # Train mutation
-                results = train(hyp.copy(), opt, device, callbacks)
+                results = train(hyp.copy(), opt, device, callbacks, mlflow)
                 callbacks = Callbacks()
                 # Write mutation results
                 keys = ('metrics/precision', 'metrics/recall', 'metrics/mAP_0.5', 'metrics/mAP_0.5:0.95', 'val/box_loss',
                         'val/obj_loss', 'val/cls_loss')
                 
-                for x, key in zip(list(results), keys):
-                    # existing code (...)
-                    key = re.sub('[^a-zA-Z0-9\/\_\-\. ]', '-', key)
-                    # we remove not allowed characters from the tags.
-                    mlflow.log_metric(key, float(x))
-                    mlflow.log_params(hyp)
+                mlflow.log_metric('mAP_0.5', float(x[2]))
+                mlflow.log_metric('mAP_0.5:0.95', float(x[3]))
+                mlflow.log_metric('box_loss', float(x[4]))
+                mlflow.log_metric('obj_loss', float(x[5]))
+                mlflow.log_metric('cls_loss', float(x[6]))
+                
+                # for x, key in zip(list(results), keys):
+                #     # existing code (...)
+                #     key = re.sub('[^a-zA-Z0-9\/\_\-\. ]', '-', key)
+                #     # we remove not allowed characters from the tags.
+                #     mlflow.log_metric(key, float(x))
+                
 
                 print_mutation(keys, results, hyp.copy(), save_dir, opt.bucket)
 
@@ -673,7 +688,6 @@ def run(**kwargs):
 
 if __name__ == '__main__':
 
-    dagshub.init(repo_owner='Mohit-robo', repo_name='end-to-end-deployment', mlflow=True)
 
     opt = parse_opt()
     main(opt)

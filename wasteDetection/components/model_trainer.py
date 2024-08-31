@@ -6,6 +6,7 @@ from wasteDetection.exception import AppException
 from wasteDetection.entity.config_entity import ModelTrainerConfig
 from wasteDetection.entity.artifacts_entity import ModelTrainerArtifact
 
+import dagshub
 
 
 class ModelTrainer:
@@ -14,9 +15,10 @@ class ModelTrainer:
         model_trainer_config: ModelTrainerConfig,
     ):
         self.model_trainer_config = model_trainer_config
-
-
     
+        dagshub.init(repo_owner=self.model_trainer_config.github_user_name,  
+                    repo_name=self.model_trainer_config.github_repo_name, 
+                    mlflow=True)
 
     def initiate_model_trainer(self,) -> ModelTrainerArtifact:
         logging.info("Entered initiate_model_trainer method of ModelTrainer class")
