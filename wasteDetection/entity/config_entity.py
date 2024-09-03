@@ -1,6 +1,5 @@
 import os
 from dataclasses import dataclass
-from datetime import datetime
 from wasteDetection.constant.training_pipeline import *
 
 
@@ -29,6 +28,7 @@ class DataIngestionConfig:
     local_data_file: str = LOCAL_DATA_FILE
 
     unzip_dir: str = UNZIP_DIR
+
 
 @dataclass
 class DataValidationConfig:

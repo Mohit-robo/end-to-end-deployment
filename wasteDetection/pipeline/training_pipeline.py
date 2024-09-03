@@ -31,6 +31,8 @@ class TrainPipeline:
             data_ingestion = DataIngestion(
                 data_ingestion_config =  self.data_ingestion_config
             )
+            if not os.path.exists(self.data_ingestion_config.data_ingestion_dir):
+                os.makedirs(self.data_ingestion_config.data_ingestion_dir, exist_ok=True)
 
             data_ingestion_artifact = data_ingestion.initiate_data_ingestion()
             logging.info("Got the data from URL")

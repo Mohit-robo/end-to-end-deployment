@@ -1,5 +1,6 @@
-import os,sys
+import os,sys, shutil
 import yaml
+
 from wasteDetection.utils.main_utils import read_yaml_file, unzip_file, get_os_type
 from wasteDetection.logger import logging
 from wasteDetection.exception import AppException
@@ -37,7 +38,6 @@ class ModelTrainer:
                 num_classes = str(yaml.safe_load(stream)['nc'])
 
             model_config_file_name = self.model_trainer_config.weight_name.split(".")[0]
-            print(model_config_file_name)
 
             config = read_yaml_file(f"yolov5/models/{model_config_file_name}.yaml")
 
@@ -48,9 +48,14 @@ class ModelTrainer:
                 yaml.dump(config, f)
 
             os.system(f"cd yolov5/ && python train.py --img 416 --batch {self.model_trainer_config.batch_size} --epochs {self.model_trainer_config.no_epochs} --data ../data.yaml --cfg ./models/custom_yolov5s.yaml --weights {self.model_trainer_config.weight_name} --name yolov5s_results  --cache --mlflow_uri {self.model_trainer_config.mlflow_tracking_uri}")
-            os.system("cp yolov5/runs/train/yolov5s_results/weights/best.pt yolov5/")
             os.makedirs(self.model_trainer_config.model_trainer_dir, exist_ok=True)
-            os.system(f"cp yolov5/runs/train/yolov5s_results/weights/best.pt {self.model_trainer_config.model_trainer_dir}/")
+            
+            if os_type == "Windows":
+                shutil.copy('yolov5/runs/train/yolov5s_results/weights/best.pt', 'yolov5/')
+                shutil.copy(f'yolov5/runs/train/yolov5s_results/weights/best.pt', self.model_trainer_config.model_trainer_dir)
+            elif os_type == "Linux":
+                os.system("cp yolov5/runs/train/yolov5s_results/weights/best.pt yolov5/")
+                os.system(f"cp yolov5/runs/train/yolov5s_results/weights/best.pt {self.model_trainer_config.model_trainer_dir}/")
            
             # os.system("rm -rf yolov5/runs")
             # os.system("rm -rf train")

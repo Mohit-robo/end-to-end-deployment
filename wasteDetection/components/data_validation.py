@@ -24,8 +24,6 @@ class DataValidation:
         except Exception as e:
             raise AppException(e, sys) 
         
-
-
     
     def validate_all_files_exist(self)-> bool:
         try:

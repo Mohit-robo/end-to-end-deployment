@@ -167,3 +167,4 @@ train/
 valid/
 data.yaml
 *.zip
+*.lock

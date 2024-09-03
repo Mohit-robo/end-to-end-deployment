@@ -71,8 +71,7 @@ The URL to the dataset is mentioned in the configs in this [file](wasteDetection
 
 ### **Logging and Exception Handling**
 
-
-    This project incorporates robust logging and exception handling to ensure smooth and traceable execution. Logging provides detailed insights into the workflow by capturing key events, errors, and system states, which aids in debugging and monitoring the application's performance. Exception handling mechanisms are in place to gracefully manage unexpected errors, preventing the application from crashing and ensuring that issues are logged for future analysis. This approach enhances the reliability and maintainability of the entire pipeline.
+This project incorporates robust logging and exception handling to ensure smooth and traceable execution. Logging provides detailed insights into the workflow by capturing key events, errors, and system states, which aids in debugging and monitoring the application's performance. Exception handling mechanisms are in place to gracefully manage unexpected errors, preventing the application from crashing and ensuring that issues are logged for future analysis. This approach enhances the reliability and maintainability of the entire pipeline.
 
 ### **Step 3: Coding**
 
@@ -102,6 +101,13 @@ Now you can check the MLFlow experiment, the DagsHub page would show something s
 
 Also you can log hyperparams, to compare multiple experiments incase to figure out the best performing combination of hyperparams.
 ![Dir Structure](diagrams/MLFlow.png)
+
+#### **DVC**
+
+DVC is a tool for version control of data and models. It is used to track the changes in the files or hyperparams. One of the many advantages of DVC is not running the entire pipeline if the step is been performed previously. DVC checks the cache and executes the part of the pipeline not executed previously.
+
+    dvc init
+    dvc repro
 
 ### **Step 4: Testing Flask App Locally**
 

@@ -1,0 +1,24 @@
+stages:
+  data_ingestion:
+    cmd: python wasteDetection/components/data_ingestion.py
+    deps:
+      - wasteDetection/components/data_ingestion.py
+      - wasteDetection/entity/config_entity.py
+      - wasteDetection/constant/training_pipeline/__init__.py
+    outs:
+      - artifacts/data_ingestion/feature_store
+  
+  model_trainer:
+    cmd: python wasteDetection/pipeline/training_pipeline.py
+    deps:
+      - wasteDetection/pipeline/training_pipeline.py
+      - wasteDetection/components/data_validation.py
+      - wasteDetection/components/model_trainer.py
+      - wasteDetection/entity/config_entity.py
+      - wasteDetection/constant/training_pipeline/__init__.py
+      # - data.zip
+    # params:
+    #   - MODEL_TRAINER_NO_EPOCHS
+    #   - MODEL_TRAINER_BATCH_SIZE
+    outs:
+      - artifacts/model_trainer/best.pt

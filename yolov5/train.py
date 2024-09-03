@@ -484,7 +484,7 @@ def parse_opt(known=False):
     parser.add_argument('--single-cls', action='store_true', help='train multi-class data as single-class')
     parser.add_argument('--optimizer', type=str, choices=['SGD', 'Adam', 'AdamW'], default='SGD', help='optimizer')
     parser.add_argument('--sync-bn', action='store_true', help='use SyncBatchNorm, only available in DDP mode')
-    parser.add_argument('--workers', type=int, default=8, help='max dataloader workers (per RANK in DDP mode)')
+    parser.add_argument('--workers', type=int, default=1, help='max dataloader workers (per RANK in DDP mode)')
     parser.add_argument('--project', default=ROOT / 'runs/train', help='save to project/name')
     parser.add_argument('--name', default='exp', help='save to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
@@ -655,19 +655,6 @@ def main(opt, callbacks=Callbacks()):
                 keys = ('metrics/precision', 'metrics/recall', 'metrics/mAP_0.5', 'metrics/mAP_0.5:0.95', 'val/box_loss',
                         'val/obj_loss', 'val/cls_loss')
                 
-                mlflow.log_metric('mAP_0.5', float(x[2]))
-                mlflow.log_metric('mAP_0.5:0.95', float(x[3]))
-                mlflow.log_metric('box_loss', float(x[4]))
-                mlflow.log_metric('obj_loss', float(x[5]))
-                mlflow.log_metric('cls_loss', float(x[6]))
-                
-                # for x, key in zip(list(results), keys):
-                #     # existing code (...)
-                #     key = re.sub('[^a-zA-Z0-9\/\_\-\. ]', '-', key)
-                #     # we remove not allowed characters from the tags.
-                #     mlflow.log_metric(key, float(x))
-                
-
                 print_mutation(keys, results, hyp.copy(), save_dir, opt.bucket)
 
             # Plot results
