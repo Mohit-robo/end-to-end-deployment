@@ -82,6 +82,12 @@ The directory structure is as shown below:
 
 Run the ```template.py``` script to automatically create all the required files and folders. Refer to all the files from this repo and test the files individually. 
 
+#### **MLFlow Integration: A Tool for Managing the Machine Learning Lifecycle**
+
+This project leverages MLFlow integrated with DagsHub for efficient experiment tracking, model versioning, and collaboration. By using DagsHub as the remote repository for MLFlow artifacts, you can seamlessly track your experiments, store model artifacts, and visualize performance metrics all in one place. This integration ensures that every aspect of your machine learning pipeline is version-controlled and easily accessible, enhancing reproducibility and collaboration within the team.
+
+Once you set up DagsHub profile, link your current github repo to DagsHub. In the `wasteDetection/constant/training_pipeline/__init__.py` change the `GITHUB_USER_NAME`, `GITHUB_REPO_NAME` and `MLFLOW_TRACKING_URI`.
+
 #### **Model Training**
 
 Refer to this [file](wasteDetection/constant/training_pipeline/__init__.py), this contains the configs.
@@ -89,6 +95,13 @@ Refer to this [file](wasteDetection/constant/training_pipeline/__init__.py), thi
     python wasteDetection/pipeline/training_pipeline.py
 
 Run the above command to train the object detector model. Check the `artifacts/model_trainer/`  folder, the final weights file will be save here.  
+
+Now you can check the MLFlow experiment, the DagsHub page would show something such 
+
+![Dir Structure](diagrams/DagsHub.png)
+
+Also you can log hyperparams, to compare multiple experiments incase to figure out the best performing combination of hyperparams.
+![Dir Structure](diagrams/MLFlow.png)
 
 ### **Step 4: Testing Flask App Locally**
 
@@ -112,3 +125,4 @@ Run the above command to train the object detector model. Check the `artifacts/m
 4. Incase if you don't have a model trained, open:  
 
         localhost:8080/train
+

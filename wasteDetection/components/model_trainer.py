@@ -1,6 +1,6 @@
 import os,sys
 import yaml
-from wasteDetection.utils.main_utils import read_yaml_file
+from wasteDetection.utils.main_utils import read_yaml_file, unzip_file, get_os_type
 from wasteDetection.logger import logging
 from wasteDetection.exception import AppException
 from wasteDetection.entity.config_entity import ModelTrainerConfig
@@ -8,6 +8,7 @@ from wasteDetection.entity.artifacts_entity import ModelTrainerArtifact
 
 import dagshub
 
+os_type = get_os_type()
 
 class ModelTrainer:
     def __init__(
@@ -25,8 +26,12 @@ class ModelTrainer:
 
         try:
             logging.info("Unzipping data")
-            os.system("unzip data.zip")
-            os.system("rm data.zip")
+            if os_type == "Windows":
+                unzip_file("data.zip")
+            elif os_type == "Linux":
+                os.system("unzip data.zip")
+    
+            # os.system("rm data.zip")
 
             with open("data.yaml", 'r') as stream:
                 num_classes = str(yaml.safe_load(stream)['nc'])
@@ -47,10 +52,10 @@ class ModelTrainer:
             os.makedirs(self.model_trainer_config.model_trainer_dir, exist_ok=True)
             os.system(f"cp yolov5/runs/train/yolov5s_results/weights/best.pt {self.model_trainer_config.model_trainer_dir}/")
            
-            os.system("rm -rf yolov5/runs")
-            os.system("rm -rf train")
-            os.system("rm -rf valid")
-            os.system("rm -rf data.yaml")
+            # os.system("rm -rf yolov5/runs")
+            # os.system("rm -rf train")
+            # os.system("rm -rf valid")
+            # os.system("rm -rf data.yaml")
 
             model_trainer_artifact = ModelTrainerArtifact(
                 trained_model_file_path="yolov5/best.pt",

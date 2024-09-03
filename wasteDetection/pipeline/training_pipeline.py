@@ -81,18 +81,25 @@ class TrainPipeline:
 
     def run_pipeline(self) -> None:
         try:
+            STAGE_NAME = "Data Ingestion and Validation stage"
+            logging.info(f">>>>>> stage {STAGE_NAME} started <<<<<<") 
+            
             data_ingestion_artifact = self.start_data_ingestion()
             data_validation_artifact = self.start_data_validation(
                 data_ingestion_artifact=data_ingestion_artifact
             )
+            logging.info(f">>>>>> stage {STAGE_NAME} completed <<<<<<\n\nx==========x")
 
-            if data_validation_artifact.validation_status == True:
-                model_trainer_artifact = self.start_model_trainer()
+            STAGE_NAME = "Training"
+            logging.info(f">>>>>> stage {STAGE_NAME} started <<<<<<") 
             
+            if data_validation_artifact.validation_status == True:
+                self.start_model_trainer()
+                logging.info(f">>>>>> stage {STAGE_NAME} completed <<<<<<\n\nx==========x")
+
             else:
                 raise Exception("Your data is not in correct format")
 
-        
         except Exception as e:
             raise AppException(e, sys)
         

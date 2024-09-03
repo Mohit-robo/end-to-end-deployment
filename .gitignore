@@ -163,3 +163,7 @@ cython_debug/
 artifacts/
 waste/
 log/
+train/
+valid/
+data.yaml
+*.zip
