@@ -1,10 +1,12 @@
-import sys,os
+import sys,os, shutil
 from wasteDetection.pipeline.training_pipeline import TrainPipeline
-from wasteDetection.utils.main_utils import decodeImage, encodeImageIntoBase64
+from wasteDetection.utils.main_utils import decodeImage, encodeImageIntoBase64, get_os_type
 from flask import Flask, request, jsonify, render_template,Response
 from flask_cors import CORS, cross_origin
 from wasteDetection.constant.application import APP_HOST, APP_PORT
 from wasteDetection.entity.config_entity import ModelPredictionConfig
+
+os_type = get_os_type()
 
 app = Flask(__name__)
 CORS(app)
@@ -40,7 +42,10 @@ def predictRoute():
 
         opencodedbase64 = encodeImageIntoBase64("yolov5/runs/detect/exp/inputImage.jpg")
         result = {"image": opencodedbase64.decode('utf-8')}
-        os.system("rm -rf yolov5/runs")
+        if os_type == "Windows":
+            shutil.rmtree("yolov5/runs")
+        elif os_type == "Linux":
+            os.system("rm -rf yolov5/runs")
 
     except ValueError as val:
         print(val)
@@ -61,7 +66,10 @@ def predictLive():
     try:
         prediction_config = ModelPredictionConfig()
         os.system(f"cd yolov5/ && python detect.py --weights {prediction_config.trained_model_file_path} --img 416 --conf 0.5 --source 0")
-        os.system("rm -rf yolov5/runs")
+        if os_type == "Windows":
+            shutil.rmtree("yolov5/runs")
+        elif os_type == "Linux":
+            os.system("rm -rf yolov5/runs")
         return "Camera starting!!" 
 
     except ValueError as val:
