@@ -45,7 +45,7 @@ This repository encapsulates a comprehensive deep learning workflow, guiding you
   
 </details>
 
-## **Step by Step Implementation**
+## **Step-by-Step Implementation**
 
 ### **Step 1: Installation and Setup**
 
@@ -182,6 +182,10 @@ Now that we have DVC integrated, you can directly run the entire pipeline with d
             AWS_SECRET_ACCESS_KEY=
             AWS_REGION = us-east-1
             AWS_ECR_LOGIN_URI = demo>>  566373416292.dkr.ecr.ap-south-1.amazonaws.com
-            ECR_REPOSITORY_NAME = simple-app
+            ECR_REPOSITORY_NAME = waste
    
-    
+### Tasks for next iteration    
+* Better data file handling i.e downloading from web or drive.
+* Auto installing required libraries.
+* Exploring DVC functionalities.
+* Fast API instead of Flask to run the App locally and for deployment.
