@@ -109,6 +109,8 @@ DVC is a tool for version control of data and models. It is used to track the ch
     dvc init
     dvc repro
 
+Now that we have DVC integrated, you can directly run the entire pipeline with dvc commands.
+
 ### **Step 4: Testing Flask App Locally**
 
 1. Run the Flask App locally
