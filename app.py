@@ -1,6 +1,6 @@
 import sys,os, shutil
 from wasteDetection.pipeline.training_pipeline import TrainPipeline
-from wasteDetection.utils.main_utils import decodeImage, encodeImageIntoBase64, get_os_type
+from wasteDetection.utils.main_utils import decodeImage, encodeImageIntoBase64, get_os_type, s3_get_model
 from flask import Flask, request, jsonify, render_template,Response
 from flask_cors import CORS, cross_origin
 from wasteDetection.constant.application import APP_HOST, APP_PORT
@@ -38,7 +38,10 @@ def predictRoute():
         decodeImage(image, clApp.filename)
 
         prediction_config = ModelPredictionConfig()
-        os.system(f"cd yolov5/ && python detect.py --weights {prediction_config.trained_model_file_path} --img 416 --conf 0.5 --source {prediction_config.prediction_image_path}")
+        # os.system(f"cd yolov5/ && python detect.py --weights {prediction_config.trained_model_file_path} --img 416 --conf 0.5 --source {prediction_config.prediction_image_path}")
+
+        model_path = s3_get_model(prediction_config.s3_model_name, prediction_config.s3_model_bucket)
+        os.system(f"cd yolov5/ && python detect.py --weights {model_path} --img 416 --conf 0.5 --source {prediction_config.prediction_image_path}")
 
         opencodedbase64 = encodeImageIntoBase64("yolov5/runs/detect/exp/inputImage.jpg")
         result = {"image": opencodedbase64.decode('utf-8')}
@@ -65,7 +68,11 @@ def predictRoute():
 def predictLive():
     try:
         prediction_config = ModelPredictionConfig()
-        os.system(f"cd yolov5/ && python detect.py --weights {prediction_config.trained_model_file_path} --img 416 --conf 0.5 --source 0")
+
+        model_path = s3_get_model()
+        # os.system(f"cd yolov5/ && python detect.py --weights {prediction_config.trained_model_file_path} --img 416 --conf 0.5 --source 0")
+        os.system(f"cd yolov5/ && python detect.py --weights {model_path} --img 416 --conf 0.5 --source 0")
+        
         if os_type == "Windows":
             shutil.rmtree("yolov5/runs")
         elif os_type == "Linux":

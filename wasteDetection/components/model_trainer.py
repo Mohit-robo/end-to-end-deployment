@@ -1,7 +1,7 @@
 import os,sys, shutil
 import yaml
 
-from wasteDetection.utils.main_utils import read_yaml_file, unzip_file, get_os_type
+from wasteDetection.utils.main_utils import read_yaml_file, unzip_file, get_os_type, s3_save_model
 from wasteDetection.logger import logging
 from wasteDetection.exception import AppException
 from wasteDetection.entity.config_entity import ModelTrainerConfig
@@ -66,6 +66,9 @@ class ModelTrainer:
                 trained_model_file_path="yolov5/best.pt",
             )
 
+            s3_save_model('yolov5/best.pt', self.model_trainer_config.s3_model_name, self.model_trainer_config.s3_model_bucket)
+            logging.info('Model logged to s3 bucket .....')
+            
             logging.info("Exited initiate_model_trainer method of ModelTrainer class")
             logging.info(f"Model trainer artifact: {model_trainer_artifact}")
 

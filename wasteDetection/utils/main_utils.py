@@ -10,11 +10,11 @@ import tempfile
 from wasteDetection.exception import AppException
 from wasteDetection.logger import logging
 
-# AWS_ACCESS_KEY = os.environ['AWS_ACCESS_KEY_ID']
-# AWS_SECRET_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_ACCESS_KEY = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 
-# logging.info(f"Fetched AWS Creds | AWS_ACCESS_KEY : {AWS_ACCESS_KEY}")
-# logging.info(f"Fetched AWS Creds | AWS_SECRET_ACCESS_KEY : {AWS_SECRET_KEY}")
+logging.info(f"Fetched AWS Creds | AWS_ACCESS_KEY : {AWS_ACCESS_KEY}")
+logging.info(f"Fetched AWS Creds | AWS_SECRET_ACCESS_KEY : {AWS_SECRET_KEY}")
 
 def read_yaml_file(file_path: str) -> dict:
     try:
@@ -79,28 +79,19 @@ def zipdir(path, ziph):
       ziph.write(os.path.join(root, file), os.path.join(folder, file))
 
             
-def s3_save_keras_model(model, model_name, BUCKET_NAME):
-  with tempfile.TemporaryDirectory() as tempdir:
-    model.save(f"{tempdir}/{model_name}")
-    # Zip it up first
-    zipf = zipfile.ZipFile(f"{tempdir}/{model_name}.zip", "w", zipfile.ZIP_STORED)
-    zipdir(f"{tempdir}/{model_name}", zipf)
-    zipf.close()
-    s3fs = get_s3fs()
-    s3fs.put(f"{tempdir}/{model_name}.zip", f"{BUCKET_NAME}/{model_name}.zip")
-    logging.info(f"Saved zipped model at path s3://{BUCKET_NAME}/{model_name}.zip")
- 
+def s3_save_model(weight_path, model_name, BUCKET_NAME):
 
-def s3_get_keras_model(model_name: str, BUCKET_NAME: str):
-  with tempfile.TemporaryDirectory() as tempdir:
+  s3fs = get_s3fs()
+  s3fs.put(f"{weight_path}", f"{BUCKET_NAME}/{model_name}")
+  logging.info(f"Saved zipped model at path s3://{BUCKET_NAME}/{model_name}")
+
+def s3_get_model(model_name: str, BUCKET_NAME: str):
+
     s3fs = get_s3fs()
     # Fetch and save the zip file to the temporary directory
-    s3fs.get(f"{BUCKET_NAME}/{model_name}.zip", f"{tempdir}/{model_name}.zip")
-    # Extract the model zip file within the temporary directory
-    with zipfile.ZipFile(f"{tempdir}/{model_name}.zip") as zip_ref:
-        zip_ref.extractall(f"{tempdir}/{model_name}")
-    # Load the keras model from the temporary directory
-    return f"{tempdir}/{model_name}"
+    s3fs.get(f"{BUCKET_NAME}/{model_name}", f"{model_name}.pt")
+    logging.info(f"Downloaded model from {BUCKET_NAME} bucket and saved locally to {model_name}")
+    return f"{model_name}.pt"
 
 def unzip_file(zip_path, extract_to='.'):
     """

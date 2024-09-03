@@ -89,9 +89,18 @@ Once you set up DagsHub profile, link your current github repo to DagsHub. In th
 
 #### **Model Training**
 
-Refer to this [file](wasteDetection/constant/training_pipeline/__init__.py), this contains the configs.
+1. Refering to **Step5**, create and AWS user. As we will be saving the weights into s3 bucket you need to mention the `S3_MDOEL_NAME` and `S3_MDOEL_BUCKET`. Refer to this [file](wasteDetection/constant/training_pipeline/__init__.py), for the configs.
+2. Set the environment variable, here we will be setting theaws credentials manually. In case of Github-Actions, we will be accessing them from github secrets.
 
-    python wasteDetection/pipeline/training_pipeline.py
+        # Windows
+        set AWS_ACCESS_KEY_ID=""
+        set AWS_SECRET_ACCESS_KEY=""
+
+        # Linux 
+        export AWS_ACCESS_KEY_ID=""
+        export AWS_SECRET_ACCESS_KEY=""
+
+        python wasteDetection/pipeline/training_pipeline.py
 
 Run the above command to train the object detector model. Check the `artifacts/model_trainer/`  folder, the final weights file will be save here.  
 
@@ -115,7 +124,6 @@ Now that we have DVC integrated, you can directly run the entire pipeline with d
 
 1. Run the Flask App locally
 
-
         python app.py
 
 2. Open a browser and host ip and the port on which the app is runnig. In our case:
@@ -134,3 +142,46 @@ Now that we have DVC integrated, you can directly run the entire pipeline with d
 
         localhost:8080/train
 
+### **Step-5: AWS CICD-Deployment with Github-Actions**
+
+   1. Login to AWS console
+   2. Below are the AWS services required:
+      
+      1.  IAM : To give the necessary permissions to the EC2 machine to access the S3 bucket, ECR and EC@ instance. Set the below policies, when creating an user.
+          1. AmazonEC2ContainerRegistryFullAccess
+          2. AmazonEC2FullAccess
+          3. AmazonS3FullAccess
+      2. EC2 machine (Ubuntu): A virtual Machine to host the Docker container and run the use-case.
+      3. S3 Bucket : To store the model weights and the data.
+      4. ECR : Elastic Container registry to save the Docker image in aws.
+   3. Connect to the EC2 instance. It will open a terminal. Run the following commands:
+
+        sudo apt-get update -y
+        sudo apt-get upgrade (Press ENTER when Daemons using outdated libraries window pops-up)
+        
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sudo sh get-docker.sh
+        sudo usermod -aG docker ubuntu
+        newgrp docker
+    
+   4. Configure EC2 as self-hosted runner:
+        
+        A self-hosted runner is a system that you deploy and manage to execute jobs from GitHub Actions on GitHub.com.
+
+            https://github.com/<github-user-name>/<repo-name>/settings/actions/runners/new
+
+            choose the required OS -> then run all the commands on the EC2 instance terminal
+
+   5. Setup github secrets:
+    
+            https://github.com/<github-user-name>/<repo-name>/settings/secrets/actions
+
+            # Add the values to the bbelow keys one-by-one 
+            
+            AWS_ACCESS_KEY_ID=
+            AWS_SECRET_ACCESS_KEY=
+            AWS_REGION = us-east-1
+            AWS_ECR_LOGIN_URI = demo>>  566373416292.dkr.ecr.ap-south-1.amazonaws.com
+            ECR_REPOSITORY_NAME = simple-app
+   
+    
